@@ -3,7 +3,7 @@ set -e
 
 APP_NAME="MRR Bar"
 BUNDLE_ID="com.mrrbar.app"
-VERSION="1.0"
+VERSION="1.1"
 APP_DIR="$APP_NAME.app"
 
 # Replace with your appcast URL before shipping
