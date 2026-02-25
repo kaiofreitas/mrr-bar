@@ -76,6 +76,9 @@ cat > "$APP_DIR/Contents/Info.plist" << EOF
 </plist>
 EOF
 
+# Ad-hoc sign so macOS doesn't block it (no Developer ID needed)
+codesign --force --deep --sign - "$APP_DIR" 2>/dev/null
+
 echo ""
 echo "Done! '$APP_DIR' is ready."
 echo "Drag it to /Applications to install."
