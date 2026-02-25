@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MRR Bar — Your MRR in the menu bar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0e0f11;
+      --green: #3ddc84;
+      --green-dim: #1f8c52;
+      --text: #f0f1f2;
+      --muted: #9ea1a8;
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'Syne', sans-serif;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--mono);
+      overflow: hidden;
+    }
+
+    /* grain */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 100;
+      opacity: 0.35;
+    }
+
+    /* grid */
+    .grid-bg {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+      background-size: 64px 64px;
+      pointer-events: none;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+    }
+
+    /* glow */
+    .glow {
+      position: fixed;
+      width: 500px;
+      height: 300px;
+      background: radial-gradient(ellipse, rgba(61,220,132,0.06) 0%, transparent 70%);
+      top: 30%;
+      left: 50%;
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+
+    /* ── LAYOUT ── */
+    .page {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 5rem 2rem 4rem;
+      position: relative;
+      gap: 0;
+    }
+
+    .brand {
+      position: absolute;
+      top: 2.2rem;
+      left: 2.8rem;
+      font-size: 0.65rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #4a4d54;
+      font-family: var(--mono);
+    }
+    .brand span { color: var(--green-dim); }
+
+    /* ── MAIN CONTENT ── */
+    .content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      width: 100%;
+    }
+
+    /* ── MENU BAR MOCKUP ── */
+    .screen-wrap {
+      width: min(680px, 90vw);
+      margin-bottom: 4rem;
+      opacity: 0;
+      transform: translateY(-10px);
+      animation: fadeDown 0.7s cubic-bezier(0.16,1,0.3,1) 0.15s forwards;
+    }
+
+    .screen {
+      background: #141416;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.07),
+        0 20px 60px rgba(0,0,0,0.7),
+        0 4px 12px rgba(0,0,0,0.4);
+    }
+
+    /* real macOS-style menu bar */
+    .menubar {
+      background: #1e1e1e;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      gap: 0;
+    }
+
+    .mb-left {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex: 1;
+    }
+
+    .mb-item {
+      font-size: 13px;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 400;
+      color: rgba(255,255,255,0.85);
+      padding: 0 8px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+    }
+
+    .mb-item.apple {
+      font-size: 15px;
+      padding: 0 10px 0 4px;
+      color: rgba(255,255,255,0.9);
+    }
+
+    .mb-item.app-name {
+      font-weight: 600;
+    }
+
+    .mb-right {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      margin-left: auto;
+    }
+
+    .mb-sys {
+      height: 28px;
+      padding: 0 6px;
+      display: flex;
+      align-items: center;
+      color: rgba(255,255,255,0.75);
+    }
+
+    .mb-sys svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .mb-time {
+      font-size: 12px;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 500;
+      color: rgba(255,255,255,0.85);
+      padding: 0 8px;
+      letter-spacing: -0.01em;
+    }
+
+    /* the MRR item — looks active/highlighted */
+    .mb-mrr {
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--green);
+      padding: 0 9px;
+      height: 22px;
+      margin: 0 3px;
+      display: flex;
+      align-items: center;
+      background: rgba(61, 220, 132, 0.12);
+      border-radius: 5px;
+      border: 1px solid rgba(61, 220, 132, 0.2);
+      white-space: nowrap;
+      letter-spacing: 0.01em;
+    }
+
+    /* desktop area below menu bar */
+    .desktop {
+      height: 56px;
+      background: linear-gradient(180deg, #161618 0%, #111113 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.5;
+    }
+    .desktop-dots {
+      display: flex;
+      gap: 6px;
+    }
+    .desktop-dots span {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.06);
+    }
+
+    /* ── TEXT ── */
+    .headline {
+      font-family: var(--sans);
+      font-size: clamp(2.2rem, 5.5vw, 3.4rem);
+      font-weight: 800;
+      line-height: 1.05;
+      text-align: center;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.4s forwards;
+    }
+    .headline em {
+      font-style: normal;
+      color: var(--green);
+    }
+
+    .sub {
+      font-size: 0.9rem;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.85;
+      margin-bottom: 3.25rem;
+      max-width: 460px;
+      opacity: 0;
+      animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.5s forwards;
+    }
+
+    /* ── CTA ── */
+    .cta-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.9rem;
+      opacity: 0;
+      animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.6s forwards;
+    }
+
+    .btn-download {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      background: var(--green);
+      color: #0a120d;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 0.8rem 2rem;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: all 0.15s;
+      box-shadow: 0 0 30px rgba(61,220,132,0.18);
+    }
+    .btn-download:hover {
+      background: #50e896;
+      transform: translateY(-1px);
+      box-shadow: 0 0 44px rgba(61,220,132,0.32);
+    }
+    .btn-download svg { width: 13px; height: 13px; }
+
+    .meta {
+      font-size: 0.67rem;
+      color: #555860;
+      letter-spacing: 0.07em;
+    }
+    .meta span { margin: 0 0.45rem; opacity: 0.5; }
+
+    .footer-tag {
+      position: absolute;
+      bottom: 2.2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.6rem;
+      color: #383b42;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeDown {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="grid-bg"></div>
+  <div class="glow"></div>
+
+  <div class="page">
+    <div class="brand">Boring Tiny Tools <span>/</span> MRR Bar</div>
+
+    <div class="content">
+
+      <!-- macOS screen mockup -->
+      <div class="screen-wrap">
+        <div class="screen">
+          <div class="menubar">
+            <div class="mb-left">
+              <div class="mb-item apple">&#63743;</div>
+              <div class="mb-item app-name">Finder</div>
+              <div class="mb-item">File</div>
+              <div class="mb-item">Edit</div>
+              <div class="mb-item">View</div>
+              <div class="mb-item">Go</div>
+            </div>
+            <div class="mb-right">
+              <!-- Battery -->
+              <div class="mb-sys">
+                <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="1" y="4.5" width="12" height="7" rx="1.5" stroke="currentColor" stroke-width="1.1"/>
+                  <rect x="2" y="5.5" width="8" height="5" rx="0.8" fill="currentColor" opacity="0.7"/>
+                  <path d="M13.5 7v2" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <!-- Wifi -->
+              <div class="mb-sys">
+                <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M8 12.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" fill="currentColor"/>
+                  <path d="M5.2 9.7a4 4 0 0 1 5.6 0" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
+                  <path d="M2.8 7.2a7 7 0 0 1 10.4 0" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <!-- Control center -->
+              <div class="mb-sys">
+                <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="2" y="2" width="5" height="5" rx="1.5" fill="currentColor" opacity="0.7"/>
+                  <rect x="9" y="2" width="5" height="5" rx="1.5" fill="currentColor" opacity="0.7"/>
+                  <rect x="2" y="9" width="5" height="5" rx="1.5" fill="currentColor" opacity="0.7"/>
+                  <rect x="9" y="9" width="5" height="5" rx="1.5" fill="currentColor" opacity="0.7"/>
+                </svg>
+              </div>
+
+              <!-- MRR item -->
+              <div class="mb-mrr">MRR: $<span id="ticker">2,847</span></div>
+
+              <div class="mb-time">9:41 AM</div>
+            </div>
+          </div>
+          <div class="desktop">
+            <div class="desktop-dots">
+              <span></span><span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h1 class="headline">Your MRR.<br/><em>Always visible.</em></h1>
+
+      <p class="sub">
+        Stripe revenue in your macOS menu bar.<br/>
+        No dashboard. No browser tab. Just the number.
+      </p>
+
+      <div class="cta-group">
+        <a href="https://buy.stripe.com/4gM00k1tO1GBbAfa0m1Jm0a" class="btn-download">
+          Buy for $4.99
+        </a>
+        <div class="meta">
+          macOS 13+
+          <span>·</span>
+          One-time
+          <span>·</span>
+          ~1 MB
+          <span>·</span>
+          No subscription
+        </div>
+      </div>
+
+    </div>
+
+    <div class="footer-tag">boringtinytools.com</div>
+  </div>
+
+  <script>
+    const el = document.getElementById('ticker');
+    const target = 2847;
+    const duration = 1400;
+    const startDelay = 700;
+
+    function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
+    function fmt(n) { return Math.round(n).toLocaleString('en-US'); }
+
+    setTimeout(() => {
+      const start = Date.now();
+      function tick() {
+        const p = Math.min((Date.now() - start) / duration, 1);
+        el.textContent = fmt(target * easeOut(p));
+        if (p < 1) requestAnimationFrame(tick);
+      }
+      tick();
+    }, startDelay);
+  </script>
+</body>
+</html>
