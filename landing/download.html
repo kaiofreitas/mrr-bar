@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MRR Bar — Download</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0e0f11;
+      --green: #3ddc84;
+      --green-dim: #1f8c52;
+      --text: #f0f1f2;
+      --muted: #9ea1a8;
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'Syne', sans-serif;
+    }
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--mono);
+      overflow: hidden;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 100;
+      opacity: 0.35;
+    }
+    .glow {
+      position: fixed;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(ellipse, rgba(61,220,132,0.07) 0%, transparent 70%);
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+    .page {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      position: relative;
+      gap: 0;
+    }
+    .brand {
+      position: absolute;
+      top: 2.2rem;
+      left: 2.8rem;
+      font-size: 0.65rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #4a4d54;
+    }
+    .brand span { color: var(--green-dim); }
+
+    /* checkmark */
+    .check-wrap {
+      margin-bottom: 2rem;
+      opacity: 0;
+      animation: popIn 0.5s cubic-bezier(0.16,1,0.3,1) 0.1s forwards;
+    }
+    .check {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: rgba(61,220,132,0.1);
+      border: 1.5px solid rgba(61,220,132,0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .check svg {
+      width: 24px;
+      height: 24px;
+      color: var(--green);
+    }
+
+    .headline {
+      font-family: var(--sans);
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      text-align: center;
+      margin-bottom: 0.75rem;
+      opacity: 0;
+      animation: fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) 0.2s forwards;
+    }
+    .headline em {
+      font-style: normal;
+      color: var(--green);
+    }
+
+    .sub {
+      font-size: 0.85rem;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.8;
+      margin-bottom: 2.75rem;
+      opacity: 0;
+      animation: fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) 0.3s forwards;
+    }
+
+    .btn-download {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      background: var(--green);
+      color: #0a120d;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 0.85rem 2.2rem;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: all 0.15s;
+      box-shadow: 0 0 30px rgba(61,220,132,0.2);
+      opacity: 0;
+      animation: fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) 0.4s forwards;
+    }
+    .btn-download:hover {
+      background: #50e896;
+      transform: translateY(-1px);
+      box-shadow: 0 0 44px rgba(61,220,132,0.32);
+    }
+    .btn-download svg { width: 13px; height: 13px; }
+
+    .steps {
+      margin-top: 2.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      opacity: 0;
+      animation: fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) 0.55s forwards;
+    }
+    .step {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      font-size: 0.72rem;
+      color: #5a5d64;
+    }
+    .step-num {
+      color: var(--green-dim);
+      font-weight: 700;
+      min-width: 1rem;
+    }
+
+    .footer-tag {
+      position: absolute;
+      bottom: 2.2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.6rem;
+      color: #383b42;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.8); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="glow"></div>
+  <div class="page">
+    <div class="brand">Boring Tiny Tools <span>/</span> MRR Bar</div>
+
+    <div class="check-wrap">
+      <div class="check">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </div>
+    </div>
+
+    <h1 class="headline">Payment confirmed.<br/><em>Thanks!</em></h1>
+
+    <p class="sub">
+      Your download is ready.<br/>
+      Open the DMG and drag MRR Bar to Applications.
+    </p>
+
+    <a href="https://github.com/kaiofreitas/mrr-bar/releases/latest/download/MRRBar-1.0.dmg"
+       class="btn-download"
+       id="dl-btn">
+      <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8 2v8M5 7l3 3 3-3M3 13h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Download MRR Bar
+    </a>
+
+    <div class="steps">
+      <div class="step"><span class="step-num">1.</span><span>Open <strong style="color:#c8cad0">MRRBar-1.0.dmg</strong></span></div>
+      <div class="step"><span class="step-num">2.</span><span>Drag MRR Bar → Applications</span></div>
+      <div class="step"><span class="step-num">3.</span><span>Right-click → Open on first launch</span></div>
+      <div class="step"><span class="step-num">4.</span><span>Enter your Stripe secret key — done</span></div>
+    </div>
+
+    <div class="footer-tag">boringtinytools.com</div>
+  </div>
+
+  <script>
+    // auto-trigger download after short delay
+    setTimeout(() => {
+      window.location.href = "https://github.com/kaiofreitas/mrr-bar/releases/latest/download/MRRBar-1.0.dmg";
+    }, 2500);
+  </script>
+</body>
+</html>
