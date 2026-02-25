@@ -26,6 +26,11 @@ mkdir -p "$APP_DIR/Contents/Resources"
 
 cp "$BUILD_DIR/MRRBar" "$APP_DIR/Contents/MacOS/MRRBar"
 
+# App icon
+if [ -f "AppIcon.icns" ]; then
+    cp AppIcon.icns "$APP_DIR/Contents/Resources/AppIcon.icns"
+fi
+
 # Embed Sparkle.framework
 cp -R "$BUILD_DIR/Sparkle.framework" "$APP_DIR/Contents/Frameworks/"
 
@@ -59,6 +64,8 @@ cat > "$APP_DIR/Contents/Info.plist" << EOF
     <true/>
     <key>NSHighResolutionCapable</key>
     <true/>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
     <key>SUFeedURL</key>
     <string>$APPCAST_URL</string>
     <key>SUPublicEDKey</key>
