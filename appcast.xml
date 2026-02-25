@@ -14,8 +14,8 @@
             <sparkle:releaseNotesLink>https://kaiofreitas.github.io/mrr-bar/notes/1.0.html</sparkle:releaseNotesLink>
             <enclosure
                 url="https://github.com/kaiofreitas/mrr-bar/releases/download/v1.0/MRRBar-1.0.zip"
-                sparkle:edSignature="PASTE_SIGNATURE_HERE"
-                length="PASTE_FILE_SIZE_HERE"
+                sparkle:edSignature="k5VwCo8Cb+ea0UfqNx7IHZgs/bxCxY3CdhOeBvfZKsmfhN79cMoMmsBkczh2rx+tWEzePUKLtL7s9BHqRbJwDQ=="
+                length="1152995"
                 type="application/octet-stream"
             />
         </item>
