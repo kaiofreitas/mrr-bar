@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
+    <channel>
+        <title>MRR Bar</title>
+        <link>https://kaiofreitas.github.io/mrr-bar/appcast.xml</link>
+        <language>en</language>
+
+        <!-- Each release gets one <item> block. Run ./publish.sh to generate it. -->
+        <item>
+            <title>Version 1.0</title>
+            <pubDate>Mon, 24 Feb 2026 00:00:00 +0000</pubDate>
+            <sparkle:version>1.0</sparkle:version>
+            <sparkle:shortVersionString>1.0</sparkle:shortVersionString>
+            <sparkle:releaseNotesLink>https://kaiofreitas.github.io/mrr-bar/notes/1.0.html</sparkle:releaseNotesLink>
+            <enclosure
+                url="https://github.com/kaiofreitas/mrr-bar/releases/download/v1.0/MRRBar-1.0.zip"
+                sparkle:edSignature="PASTE_SIGNATURE_HERE"
+                length="PASTE_FILE_SIZE_HERE"
+                type="application/octet-stream"
+            />
+        </item>
+
+    </channel>
+</rss>
